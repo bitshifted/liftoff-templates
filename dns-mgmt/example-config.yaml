@@ -1,0 +1,37 @@
+---
+template-dir: /home/vlada/work/bitshift/liftoff-templates/dns-mgmt
+terraform:
+  backend:
+    type: local
+  providers:
+    hetznerdns:
+      api-token: "$HETZNER_DNS_API_TOKEN"
+variables:
+  dns_zones:
+    - name: astrolabs.io
+      resource_name: astrolabs_zone
+      ttl: 3600
+      timeouts:
+        create: 30s
+        delete: 1m30s
+        read: 1h
+      primary_servers:
+        - address: 1.2.3.4
+          port: 53
+          resource_name: oxygen
+        - address: 8.8.8.8
+          port: 53
+      records:
+        - name: idp
+          type: A
+          value: 1.2.3.4
+          ttl: 300
+        - name: auth
+          type: CNAME
+          value: bar
+    - name: example.com
+      ttl: 300
+      records:
+        - name: foo
+          type: AAA
+          value: '@'

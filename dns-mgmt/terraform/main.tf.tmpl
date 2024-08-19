@@ -1,0 +1,91 @@
+# Definition of Terraform resources
+
+[[- range $i,$dz := .Variables.dns_zones ]]
+# Begin DNS zone [[ $dz.name ]]
+    [[- $zone_rc_name := printf "zone_%d" $i ]]
+    [[- with $dz.resource_name ]]
+    [[- $zone_rc_name = . ]]
+    [[- end ]]
+resource "hetznerdns_zone" "[[ $zone_rc_name ]]" {
+    name = "[[ $dz.name ]]"
+    ttl = "[[ $dz.ttl ]]"
+    [[- with $dz.timeouts ]]
+    timeouts {
+        [[- with .create ]]
+        create = "[[ . ]]"
+        [[- end ]]
+        [[- with .read ]]
+        read = "[[ . ]]"
+        [[- end ]]
+        [[- with .update ]]
+        update = "[[ . ]]"
+        [[- end ]]
+        [[- with .delete ]]
+        delete = "[[ . ]]"
+        [[- end ]]
+    }
+    [[- end ]]
+}
+  [[- range $j,$srv := $dz.primary_servers ]]
+    [[- $srv_rc_name := printf "ps_%d" $i ]]
+    [[- with $srv.resource_name ]]
+    [[- $srv_rc_name = . ]]
+    [[- end ]]
+
+resource "hetznerdns_primary_server" "[[ $srv_rc_name]]" {
+    zone_id = [[ printf "hetznerdns_zone.%s.id" $zone_rc_name ]]
+    address = "[[ .address ]]"
+    port = [[ .port ]]
+    [[- with $srv.timeouts ]]
+    timeouts {
+        [[- with .create ]]
+        create = "[[ . ]]"
+        [[- end ]]
+        [[- with .read ]]
+        read = "[[ . ]]"
+        [[- end ]]
+        [[- with .update ]]
+        update = "[[ . ]]"
+        [[- end ]]
+        [[- with .delete ]]
+        delete = "[[ . ]]"
+        [[- end ]]
+    }
+    [[- end ]]
+}
+  [[- end ]]
+  [[- range $k, $rec := $dz.records ]]
+    [[- $rec_rc_name := printf "rec_%s_%d" $zone_rc_name $k ]]
+    [[- with $rec.resource_name ]]
+    [[- $rec_rc_name = . ]]
+    [[- end ]]
+
+resource "hetznerdns_record" "[[ $rec_rc_name ]]" {
+    zone_id = [[ printf "hetznerdns_zone.%s.id" $zone_rc_name ]]
+    type = "[[ .type ]]"
+    name = "[[ .name ]]"
+    value = "[[ .value ]]"
+    [[- with .ttl ]]
+    ttl = [[ . ]]
+    [[- end -]]
+    [[- with $rec.timeouts ]]
+    timeouts {
+        [[- with .create ]]
+        create = "[[ . ]]"
+        [[- end ]]
+        [[- with .read ]]
+        read = "[[ . ]]"
+        [[- end ]]
+        [[- with .update ]]
+        update = "[[ . ]]"
+        [[- end ]]
+        [[- with .delete ]]
+        delete = "[[ . ]]"
+        [[- end ]]
+    }
+    [[- end ]]
+}
+  [[- end ]]
+# End DNS zone [[ $dz.name ]]
+
+[[ end -]]
