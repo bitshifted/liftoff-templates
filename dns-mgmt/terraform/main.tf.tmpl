@@ -1,21 +1,21 @@
-# Definition of Terraform resources
 
-[[- range $i,$dz := .Variables.dns_zones ]]
-# Begin DNS zone [[ $dz.name ]]
-    [[- $zone_rc_name := printf "zone_%d" $i ]]
-    [[- with $dz.resource_name ]]
-    [[- $zone_rc_name = . ]]
-    [[- end ]]
-resource "hetznerdns_zone" "[[ $zone_rc_name ]]" {
-    name = "[[ $dz.name ]]"
-    ttl = "[[ $dz.ttl ]]"
-    [[- with $dz.timeouts ]]
-    timeouts {
-        [[- with .create ]]
-        create = "[[ . ]]"
-        [[- end ]]
+[[ if .Terraform.HasProvider "hetznerdns" -]]
+module "hetznerdns" {
+  source = "./hetznerdns"
+ 
+  dns_zones = [
+  [[- with ( index .Variables "hetznerdns") ]]
+    [[- range  .dns_zones ]]
+    {
+      name = "[[ .name ]]"
+      ttl = [[ .ttl ]]
+      [[- with .timeouts ]]
+      timeouts = {
         [[- with .read ]]
         read = "[[ . ]]"
+        [[- end ]]
+        [[- with .create ]]
+        create = "[[ . ]]"
         [[- end ]]
         [[- with .update ]]
         update = "[[ . ]]"
@@ -23,69 +23,114 @@ resource "hetznerdns_zone" "[[ $zone_rc_name ]]" {
         [[- with .delete ]]
         delete = "[[ . ]]"
         [[- end ]]
-    }
+      }
+      [[- end ]]
+      [[- with .primary_servers ]]
+      primary_servers = [
+        [[- range . ]]
+        {
+        address = "[[ .address ]]"
+        port = [[ .port ]]
+        [[- with .timeouts ]]
+        timeouts = {
+            [[- with .read ]]
+            read = "[[ . ]]"
+            [[- end ]]
+            [[- with .create ]]
+            create = "[[ . ]]"
+            [[- end ]]
+            [[- with .update ]]
+            update = "[[ . ]]"
+            [[- end ]]
+            [[- with .delete ]]
+            delete = "[[ . ]]"
+            [[- end ]]
+        }
+        [[- end ]]
+        },
+        [[- end ]]
+      ]
+      [[- end ]]
+      [[- with .records ]]
+      records = [
+        [[- range . ]]
+        {
+          name = "[[ .name ]]"
+          type = "[[ .type ]]"
+          value = "[[ .value ]]"
+          [[- with .ttl ]]
+          ttl = [[ . ]]
+          [[- end ]]
+          [[- with .timeouts ]]
+          timeouts = {
+            [[- with .read ]]
+            read = "[[ . ]]"
+            [[- end ]]
+            [[- with .create ]]
+            create = "[[ . ]]"
+            [[- end ]]
+            [[- with .update ]]
+            update = "[[ . ]]"
+            [[- end ]]
+            [[- with .delete ]]
+            delete = "[[ . ]]"
+            [[- end ]]
+          }
+          [[- end ]]
+        },
+        [[- end ]]
+      ]
+      [[- end ]]
+    },
     [[- end ]]
-}
-  [[- range $j,$srv := $dz.primary_servers ]]
-    [[- $srv_rc_name := printf "ps_%d" $i ]]
-    [[- with $srv.resource_name ]]
-    [[- $srv_rc_name = . ]]
-    [[- end ]]
-
-resource "hetznerdns_primary_server" "[[ $srv_rc_name]]" {
-    zone_id = [[ printf "hetznerdns_zone.%s.id" $zone_rc_name ]]
-    address = "[[ .address ]]"
-    port = [[ .port ]]
-    [[- with $srv.timeouts ]]
-    timeouts {
-        [[- with .create ]]
-        create = "[[ . ]]"
-        [[- end ]]
-        [[- with .read ]]
-        read = "[[ . ]]"
-        [[- end ]]
-        [[- with .update ]]
-        update = "[[ . ]]"
-        [[- end ]]
-        [[- with .delete ]]
-        delete = "[[ . ]]"
-        [[- end ]]
-    }
-    [[- end ]]
-}
   [[- end ]]
-  [[- range $k, $rec := $dz.records ]]
-    [[- $rec_rc_name := printf "rec_%s_%d" $zone_rc_name $k ]]
-    [[- with $rec.resource_name ]]
-    [[- $rec_rc_name = . ]]
-    [[- end ]]
-
-resource "hetznerdns_record" "[[ $rec_rc_name ]]" {
-    zone_id = [[ printf "hetznerdns_zone.%s.id" $zone_rc_name ]]
-    type = "[[ .type ]]"
-    name = "[[ .name ]]"
-    value = "[[ .value ]]"
-    [[- with .ttl ]]
-    ttl = [[ . ]]
-    [[- end -]]
-    [[- with $rec.timeouts ]]
-    timeouts {
-        [[- with .create ]]
-        create = "[[ . ]]"
-        [[- end ]]
-        [[- with .read ]]
-        read = "[[ . ]]"
-        [[- end ]]
-        [[- with .update ]]
-        update = "[[ . ]]"
-        [[- end ]]
-        [[- with .delete ]]
-        delete = "[[ . ]]"
-        [[- end ]]
-    }
-    [[- end ]]
+  ]
 }
-  [[- end ]]
-# End DNS zone [[ $dz.name ]]
+[[- end ]]
 
-[[ end -]]
+[[ if .Terraform.HasProvider "digitalocean" -]]
+module "digitalocean" {
+  source = "./digitalocean"
+  dns_zones = [
+  [[- with ( index .Variables "digitalocean") ]]
+    [[- range  .dns_zones ]]
+    {
+      name = "[[ .name ]]"
+      [[- with .ip_address ]]
+      ip_address = "[[ . ]]"
+      [[- end ]]
+      [[- with .records ]]
+      records = [
+        [[- range . ]]
+        {
+          name = "[[ .name ]]"
+          type = "[[ .type ]]"
+          value = "[[ .value ]]"
+          [[- with .port ]]
+          port = [[ . ]]
+          [[- end ]]
+          [[- with .priority ]]
+          priority = [[ . ]]
+          [[- end ]]
+          [[- with .weight ]]
+          weight = [[ . ]]
+          [[- end ]]
+          [[- with .ttl ]]
+          ttl = [[ . ]]
+          [[- end ]]
+          [[- with .flags ]]
+          flags = "[[ . ]]"
+          [[- end ]]
+          [[- with .tags ]]
+          tags = "[[ . ]]"
+          [[- end ]]
+        },
+        [[- end ]]
+      ]
+      [[- end ]]
+    },
+    [[- end ]]
+  [[- end ]]
+  ]
+}
+[[- end ]]

@@ -17,11 +17,11 @@ resource "hetznerdns_zone" "dns_zone" {
 }
 
 locals {
-  zone_name_servers = flatten([
+  zone_primary_servers = flatten([
     for zone_name, zone in var.dns_zones : [
-        for server_key, server in zone.name_servers != null ? zone.name_servers : [] : {
+        for server_key, server in zone.primary_servers != null ? zone.name_servers : [] : {
             zone_id = hetznerdns_zone.dns_zone[zone_name.name].id
-            nameserver = server
+            primserver = server
             srv_name = server.address
         }
     ]
@@ -41,17 +41,17 @@ locals {
 
 
 resource "hetznerdns_primary_server" "name_server" {
-    for_each = {for ns in local.zone_name_servers: ns.srv_name => ns }
+    for_each = {for ns in local.zone_primary_servers: ns.srv_name => ns }
     zone_id = each.value.zone_id
-    address = each.value.nameserver.address
+    address = each.value.primserver.address
     port = each.value.nameserver.port
     dynamic "timeouts" {
       for_each = each.value.nameserver.timeouts == null ? [] : each.value.nameserver.timeouts[*]
       content {
-         read = each.value.nameserver.timeouts.read
-         create = each.value.nameserver.timeouts.create
-         update = each.value.nameserver.timeouts.update
-         delete = each.value.nameserver.timeouts.delete
+         read = each.value.primserver.timeouts.read
+         create = each.value.primserver.timeouts.create
+         update = each.value.primserver.timeouts.update
+         delete = each.value.primserver.timeouts.delete
       }
     }
 }

@@ -10,7 +10,7 @@ variable "dns_zones" {
       update = optional(string)
       delete = optional(string)
     }))
-    name_servers = optional(set(object({
+    primary_servers = optional(set(object({
       address = string
       port = number
       timeouts = optional(object({
