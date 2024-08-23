@@ -1,5 +1,7 @@
 ---
-template-dir: /home/vlada/work/bitshift/liftoff-templates/dns-mgmt
+template-repo: https://github.com/bitshifted/liftoff-templates.git
+template-version: d5f3810dd52f046ad35c5565e4740285ea85a139
+template-dir: dns-mgmt
 terraform:
   backend:
     type: local
@@ -8,17 +10,17 @@ terraform:
       api-token: "$HETZNER_DNS_API_TOKEN"
 variables:
   dns_zones:
-    - name: astrolabs.io
-      resource_name: astrolabs_zone
+    - name: mydomain.io
+      resource_name: mydomain_zone
       ttl: 3600
       timeouts:
         create: 30s
         delete: 1m30s
         read: 1h
-      primary_servers:
+      name_servers:
         - address: 1.2.3.4
           port: 53
-          resource_name: oxygen
+          resource_name: ps1
         - address: 8.8.8.8
           port: 53
       records:
