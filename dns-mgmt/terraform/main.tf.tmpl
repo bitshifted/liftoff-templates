@@ -1,0 +1,136 @@
+
+[[ if .Terraform.HasProvider "hetznerdns" -]]
+module "hetznerdns" {
+  source = "./hetznerdns"
+ 
+  dns_zones = [
+  [[- with ( index .Variables "hetznerdns") ]]
+    [[- range  .dns_zones ]]
+    {
+      name = "[[ .name ]]"
+      ttl = [[ .ttl ]]
+      [[- with .timeouts ]]
+      timeouts = {
+        [[- with .read ]]
+        read = "[[ . ]]"
+        [[- end ]]
+        [[- with .create ]]
+        create = "[[ . ]]"
+        [[- end ]]
+        [[- with .update ]]
+        update = "[[ . ]]"
+        [[- end ]]
+        [[- with .delete ]]
+        delete = "[[ . ]]"
+        [[- end ]]
+      }
+      [[- end ]]
+      [[- with .primary_servers ]]
+      primary_servers = [
+        [[- range . ]]
+        {
+        address = "[[ .address ]]"
+        port = [[ .port ]]
+        [[- with .timeouts ]]
+        timeouts = {
+            [[- with .read ]]
+            read = "[[ . ]]"
+            [[- end ]]
+            [[- with .create ]]
+            create = "[[ . ]]"
+            [[- end ]]
+            [[- with .update ]]
+            update = "[[ . ]]"
+            [[- end ]]
+            [[- with .delete ]]
+            delete = "[[ . ]]"
+            [[- end ]]
+        }
+        [[- end ]]
+        },
+        [[- end ]]
+      ]
+      [[- end ]]
+      [[- with .records ]]
+      records = [
+        [[- range . ]]
+        {
+          name = "[[ .name ]]"
+          type = "[[ .type ]]"
+          value = "[[ .value ]]"
+          [[- with .ttl ]]
+          ttl = [[ . ]]
+          [[- end ]]
+          [[- with .timeouts ]]
+          timeouts = {
+            [[- with .read ]]
+            read = "[[ . ]]"
+            [[- end ]]
+            [[- with .create ]]
+            create = "[[ . ]]"
+            [[- end ]]
+            [[- with .update ]]
+            update = "[[ . ]]"
+            [[- end ]]
+            [[- with .delete ]]
+            delete = "[[ . ]]"
+            [[- end ]]
+          }
+          [[- end ]]
+        },
+        [[- end ]]
+      ]
+      [[- end ]]
+    },
+    [[- end ]]
+  [[- end ]]
+  ]
+}
+[[- end ]]
+
+[[ if .Terraform.HasProvider "digitalocean" -]]
+module "digitalocean" {
+  source = "./digitalocean"
+  dns_zones = [
+  [[- with ( index .Variables "digitalocean") ]]
+    [[- range  .dns_zones ]]
+    {
+      name = "[[ .name ]]"
+      [[- with .ip_address ]]
+      ip_address = "[[ . ]]"
+      [[- end ]]
+      [[- with .records ]]
+      records = [
+        [[- range . ]]
+        {
+          name = "[[ .name ]]"
+          type = "[[ .type ]]"
+          value = "[[ .value ]]"
+          [[- with .port ]]
+          port = [[ . ]]
+          [[- end ]]
+          [[- with .priority ]]
+          priority = [[ . ]]
+          [[- end ]]
+          [[- with .weight ]]
+          weight = [[ . ]]
+          [[- end ]]
+          [[- with .ttl ]]
+          ttl = [[ . ]]
+          [[- end ]]
+          [[- with .flags ]]
+          flags = "[[ . ]]"
+          [[- end ]]
+          [[- with .tags ]]
+          tags = "[[ . ]]"
+          [[- end ]]
+        },
+        [[- end ]]
+      ]
+      [[- end ]]
+    },
+    [[- end ]]
+  [[- end ]]
+  ]
+}
+[[- end ]]

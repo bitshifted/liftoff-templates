@@ -1,0 +1,47 @@
+---
+template-repo: https://github.com/bitshifted/liftoff-templates.git
+template-version: d5f3810dd52f046ad35c5565e4740285ea85a139
+template-dir: dns-mgmt
+terraform:
+  backend:
+    type: local
+  providers:
+    - hetznerdns
+    - digitalocean
+variables:
+  hetznerdns:
+    dns_zones:
+      - name: mydomain.io
+        resource_name: mydomain_zone
+        ttl: 3600
+        timeouts:
+          create: 30s
+          delete: 1m30s
+          read: 1h
+        name_servers:
+          - address: 1.2.3.4
+            port: 53
+            resource_name: ps1
+          - address: 8.8.8.8
+            port: 53
+        records:
+          - name: idp
+            type: A
+            value: 1.2.3.4
+            ttl: 300
+          - name: auth
+            type: CNAME
+            value: bar
+      - name: example.com
+        ttl: 300
+        records:
+          - name: foo
+            type: AAA
+            value: '@'
+  digitalocean:
+    dns_zones:
+      - name: domainfoo.org
+        records:
+          - name: rec1
+            type: A
+            value: 10.10.0.1
