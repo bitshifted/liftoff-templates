@@ -1,0 +1,75 @@
+
+terraform {
+[[ with .Terraform.Backend -]]
+  backend "[[ .Type ]]" {
+    [[- with .Local ]]
+    path = "[[ .Path ]]"
+    workspace_dir = "[[ .Workspace ]]"
+    [[- end ]]
+  }
+[[- end ]]
+}
+
+[[ if .Terraform.HasProvider "hcloud" -]]
+module "hcloud" {
+  source = "./hcloud"
+ 
+  networks = [
+  [[- with ( index .Variables "hcloud") ]]
+    [[- range  .networks ]]
+    {
+      name = "[[ .name ]]"
+      ip_range = "[[ .ip_range ]]"
+      [[- with .delete_protection ]]
+      delete_protection = [[ . ]]
+      [[- end ]]
+      [[- with .expose_routes_to_vswitch ]]
+      expose_routes_to_vswitch = [[ . ]]
+      [[- end ]]
+      [[- with .subnets ]]
+      subnets = [
+        [[- range . ]]
+        {
+        type = "[[ .type ]]"
+        region = "[[ .region ]]"
+        ip_range = "[[ .ip_range ]]"
+        },
+        [[- end ]]
+      ]
+      [[- end ]]
+      [[- with .routes ]]
+      routes = [
+        [[- range . ]]
+        {
+          destination = "[[ .destination ]]"
+          gateway = "[[ .gateway ]]"
+        },
+        [[- end ]]
+      ]
+      [[- end ]]
+    },
+    [[- end ]]
+  [[- end ]]
+  ]
+}
+[[- end ]]
+
+[[ if .Terraform.HasProvider "digitalocean" -]]
+module "digitalocean" {
+  source = "./digitalocean"
+  vpcs = [
+  [[- with ( index .Variables "digitalocean") ]]
+    [[- range .vpcs ]]
+    {
+      name = "[[ .name ]]"
+      region = "[[ .region ]]"
+      ip_range = "[[ .ip_range ]]"
+      [[- with .description ]]
+      description = "[[ . ]]"
+      [[- end ]]
+    },
+    [[- end ]]
+  [[- end ]]
+  ]
+}
+[[- end ]]
