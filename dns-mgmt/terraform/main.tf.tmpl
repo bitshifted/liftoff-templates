@@ -1,14 +1,14 @@
 
-terraform {
 [[ with .Terraform.Backend -]]
+terraform {
   backend "[[ .Type ]]" {
     [[- with .Local ]]
     path = "[[ .Path ]]"
     workspace_dir = "[[ .Workspace ]]"
     [[- end ]]
   }
-[[- end ]]
 }
+[[- end ]]
 
 [[ if .Terraform.HasProvider "hetznerdns" -]]
 module "hetznerdns" {
