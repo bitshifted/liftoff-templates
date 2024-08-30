@@ -1,0 +1,50 @@
+terraform {
+[[ with .Terraform.Backend -]]
+  backend "[[ .Type ]]" {
+    [[- with .Local ]]
+    path = "[[ .Path ]]"
+    workspace_dir = "[[ .Workspace ]]"
+    [[- end ]]
+  }
+[[- end ]]
+}
+
+[[ if .Terraform.HasProvider "hcloud" -]]
+module "hcloud" {
+  source = "./hcloud"
+  [[- with ( index .Variables "hcloud") ]]
+  private_networks = [
+     [[- range .private_networks ]]
+    {
+       name = "[[ .name ]]"
+       ip_range = "[[ .ip_range ]]"
+    },
+     [[- end ]]
+  ]
+  gateways = [
+     [[- range .gateways ]]
+    {
+      name = "[[ .name ]]"
+       [[- with .os_image ]]
+      os_image = "[[ . ]]
+       [[- end ]]
+       [[- with .instance_type ]]
+      instance_type = "[[ . ]]
+       [[- end ]]
+      location = "[[ .location ]]"
+      networks = [
+        [[- range .networks ]]
+      "[[ . ]]",
+        [[- end ]]
+      ]
+      labels = {
+        [[- range $key, $value :=  $.Tags ]]
+      "[[ $key ]]" = "[[ $value ]]"
+        [[- end ]]  
+      }
+    },
+     [[- end ]]
+  ]
+  [[- end ]]
+}
+[[- end ]]

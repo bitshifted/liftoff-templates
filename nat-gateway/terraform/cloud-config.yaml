@@ -1,0 +1,25 @@
+#cloud-config
+
+ssh_pwauth: false
+
+users:
+  - default
+
+package_update: true
+packages:
+  - ifupdown
+runcmd:
+  - |
+    cat <<'EOF' >> /etc/network/interfaces
+    auto eth0
+    iface eth0 inet dhcp
+        post-up echo 1 > /proc/sys/net/ipv4/ip_forward
+        [[- if .Terraform.HasProvider "hcloud" -]]
+          [[- with ( index .Variables "hcloud") ]]
+            [[- range .private_networks]]
+        post-up iptables -t nat -A POSTROUTING -s '[[ .ip_range ]]' -o eth0 -j MASQUERADE
+            [[- end ]]
+          [[- end ]]
+        [[- end ]]
+    EOF
+  - reboot
