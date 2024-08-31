@@ -1,0 +1,6 @@
+auto eth0
+iface eth0 inet dhcp
+    post-up echo 1 > /proc/sys/net/ipv4/ip_forward
+[[- range .ProcessingVars.private_networks]]
+    post-up iptables -t nat -A POSTROUTING -s '[[ .ip_range ]]' -o eth0 -j MASQUERADE
+[[- end ]]

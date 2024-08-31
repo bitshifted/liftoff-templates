@@ -12,7 +12,7 @@ terraform {
 [[ if .Terraform.HasProvider "hcloud" -]]
 module "hcloud" {
   source = "./hcloud"
-  [[- with ( index .Variables "hcloud") ]]
+  [[- with .ProcessingVars ]]
   private_networks = [
      [[- range .private_networks ]]
     {
