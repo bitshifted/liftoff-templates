@@ -1,10 +1,11 @@
 # NAT gateway hosts
 resource "hcloud_server" "nat-gateway" {
-  for_each    = { for gw in var.gateways : gw.name => gw }
+  for_each    = { for gw in var.hcloud_gateways : gw.name => gw }
   name        = each.value.name
   image       = each.value.os_image
   server_type = each.value.instance_type
   location    = each.value.location
+  ssh_keys = var.hcloud_ssh_keys
   user_data   = file("./cloud-config.yaml")
   public_net {
     ipv4_enabled = true
@@ -21,7 +22,7 @@ resource "hcloud_server" "nat-gateway" {
 
 locals {
   ip_address_net_id_map = flatten([
-    for gw in var.gateways : [
+    for gw in var.hcloud_gateways : [
       for net in hcloud_server.nat-gateway[gw.name].network : {
         net_id = net.network_id
         ip     = net.ip

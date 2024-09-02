@@ -13,7 +13,7 @@ terraform {
 module "hcloud" {
   source = "./hcloud"
   [[- with .ProcessingVars ]]
-  private_networks = [
+  hcloud_private_networks = [
      [[- range .private_networks ]]
     {
        name = "[[ .name ]]"
@@ -21,7 +21,12 @@ module "hcloud" {
     },
      [[- end ]]
   ]
-  gateways = [
+  hcloud_ssh_keys = [
+    [[- range .hcloud_ssh_keys ]]
+    "[[ . ]]",
+    [[- end ]]
+  ]
+  hcloud_gateways = [
      [[- range .gateways ]]
     {
       name = "[[ .name ]]"

@@ -1,11 +1,16 @@
-variable "private_networks" {
+variable "hcloud_private_networks" {
   type = set(object({
     name     = string
     ip_range = string
   }))
 }
 
-variable "gateways" {
+variable "hcloud_ssh_keys" {
+  type = set(string)
+  default = [  ]
+}
+
+variable "hcloud_gateways" {
   type = set(object({
     name          = string
     os_image      = optional(string, "ubuntu-24.04")
