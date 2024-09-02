@@ -5,7 +5,7 @@ resource "hcloud_server" "nat-gateway" {
   image       = each.value.os_image
   server_type = each.value.instance_type
   location    = each.value.location
-  ssh_keys = var.hcloud_ssh_keys
+  ssh_keys    = var.hcloud_ssh_keys
   user_data   = file("./cloud-config.yaml")
   public_net {
     ipv4_enabled = true

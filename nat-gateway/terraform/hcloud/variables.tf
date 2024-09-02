@@ -6,8 +6,8 @@ variable "hcloud_private_networks" {
 }
 
 variable "hcloud_ssh_keys" {
-  type = set(string)
-  default = [  ]
+  type    = set(string)
+  default = []
 }
 
 variable "hcloud_gateways" {
