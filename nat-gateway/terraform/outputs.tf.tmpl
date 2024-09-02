@@ -1,5 +1,6 @@
-[[ if .Terraform.HasProvider "hcloud" -]]
 output "nat_gw_ips" {
-  value = module.hcloud.gateway_public_address
-}
+[[- range .Terraform.Providers ]]
+  value = merge(module.[[ . ]].gateway_public_address,)
 [[- end ]]
+}
+
