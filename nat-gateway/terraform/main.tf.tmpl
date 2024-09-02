@@ -14,7 +14,7 @@ module "hcloud" {
   source = "./hcloud"
   [[- with .ProcessingVars ]]
   hcloud_private_networks = [
-     [[- range .private_networks ]]
+     [[- range .hcloud_private_networks ]]
     {
        name = "[[ .name ]]"
        ip_range = "[[ .ip_range ]]"
@@ -27,7 +27,7 @@ module "hcloud" {
     [[- end ]]
   ]
   hcloud_gateways = [
-     [[- range .gateways ]]
+     [[- range .hcloud_gateways ]]
     {
       name = "[[ .name ]]"
        [[- with .os_image ]]
