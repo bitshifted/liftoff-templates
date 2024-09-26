@@ -1,0 +1,21 @@
+#cloud-config
+
+ssh_pwauth: false
+
+users:
+  - default
+  # Configure server to be managed by Ansible
+  - name: [[ .ProcessingVars.ansible_user ]]
+    gecos: Ansible User
+    groups:
+      - user
+      - admin
+      - wheel
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    lock_passwd: true
+    ssh_authorized_keys:
+    [[- range .ProcessingVars.ansible_ssh_public_keys ]]
+      - [[ . ]]
+    [[- end ]]
+

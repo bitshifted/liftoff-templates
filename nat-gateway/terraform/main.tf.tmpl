@@ -1,0 +1,86 @@
+[[ with .Terraform.Backend -]]
+terraform {
+  backend "[[ .Type ]]" {
+    [[- with .Local ]]
+    path = "[[ .Path ]]"
+    workspace_dir = "[[ .Workspace ]]"
+    [[- end ]]
+  }
+}
+[[- end ]]
+
+[[ if .Terraform.HasProvider "hcloud" -]]
+module "hcloud" {
+  source = "./hcloud"
+  [[- with .ProcessingVars ]]
+  hcloud_private_networks = [
+     [[- range .hcloud_private_networks ]]
+    {
+       name = "[[ .name ]]"
+       ip_range = "[[ .ip_range ]]"
+    },
+     [[- end ]]
+  ]
+  hcloud_ssh_keys = [
+    [[- range .hcloud_ssh_keys ]]
+    "[[ . ]]",
+    [[- end ]]
+  ]
+  hcloud_gateways = [
+     [[- range .hcloud_gateways ]]
+    {
+      name = "[[ .name ]]"
+       [[- with .os_image ]]
+      os_image = "[[ . ]]
+       [[- end ]]
+       [[- with .instance_type ]]
+      instance_type = "[[ . ]]
+       [[- end ]]
+      location = "[[ .location ]]"
+      networks = [
+        [[- range .networks ]]
+      "[[ . ]]",
+        [[- end ]]
+      ]
+      labels = {
+        [[- range $key, $value :=  $.Tags ]]
+      "[[ $key ]]" = "[[ $value ]]"
+        [[- end ]]  
+      }
+    },
+     [[- end ]]
+  ]
+  [[- end ]]
+}
+[[- end ]]
+
+[[ if .Terraform.HasProvider "digitalocean" -]]
+module "digitalocean" {
+  source = "./digitalocean"
+  [[- with .ProcessingVars ]]
+  do_vpcs = [
+    [[- range .do_vpcs ]]
+    {
+      name = "[[ .name ]]"
+       ip_range = "[[ .ip_range ]]",
+    },
+    [[- end ]]
+  ]
+  do_gateways = [
+   [[- range .do_gateways ]]
+   {
+    name = "[[ .name ]]"
+      [[- with .os_image ]]
+    os_image = "[[ . ]]
+      [[- end ]]
+      [[- with .instance_type ]]
+    size = "[[ . ]]
+      [[- end ]]
+    region = "[[ .region ]]"
+    vpc = "[[ .vpc ]]"
+   },
+   [[- end ]]
+  ]
+  [[- end ]]
+}
+[[- end ]]

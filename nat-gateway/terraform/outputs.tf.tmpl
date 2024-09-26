@@ -1,0 +1,6 @@
+output "nat_gw_ips" {
+[[- range .Terraform.Providers ]]
+  value = concat(module.[[ . ]].gateway_public_address,)
+[[- end ]]
+}
+

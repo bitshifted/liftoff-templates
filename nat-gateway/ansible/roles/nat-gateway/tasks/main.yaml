@@ -1,0 +1,13 @@
+---
+- name: Install required packages
+  apt:
+    name: ifupdown
+    state: present
+    update_cache: true
+- name: Copy configuration file
+  copy:
+    src: interfaces
+    dest: /etc/network/interfaces
+    force: true
+- name: Reboot server
+  reboot:
