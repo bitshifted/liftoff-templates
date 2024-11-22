@@ -4,3 +4,9 @@ output "nat_gw_ips" {
 [[- end ]]
 }
 
+output "nat_gw_data" {
+  [[- range .Terraform.Providers ]]
+  value = tolist([module.[[ . ]].nat_gw_mapping])
+[[- end ]]
+}
+

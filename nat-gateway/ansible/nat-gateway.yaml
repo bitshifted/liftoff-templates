@@ -1,5 +1,11 @@
 ---
 - hosts: all
   become: yes
+  gather_facts: no # important
+  pre_tasks:
+    - name: Wait for system to become reachable
+      wait_for_connection:
+    - name: Gather facts for the first time
+      setup:
   roles:
     - nat-gateway

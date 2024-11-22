@@ -10,6 +10,13 @@ variable "do_ssh_keys" {
   default = []
 }
 
+variable "do_project_name" {
+  type = string
+  description = "Digital Ocean project for resources"
+  nullable = true
+  default = null
+}
+
 variable "do_gateways" {
   type = set(object({
     name          = string
@@ -17,6 +24,6 @@ variable "do_gateways" {
     size = optional(string, "s-1vcpu-512mb-10gb")
     region      = string
     vpc      = string
-    labels        = optional(map(string))
+    tags        = optional(map(string), {})
   }))
 }

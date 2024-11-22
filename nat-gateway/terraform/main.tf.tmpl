@@ -14,7 +14,7 @@ module "hcloud" {
   source = "./hcloud"
   [[- with .ProcessingVars ]]
   hcloud_private_networks = [
-     [[- range .hcloud_private_networks ]]
+     [[- range .private_networks ]]
     {
        name = "[[ .name ]]"
        ip_range = "[[ .ip_range ]]"
@@ -58,8 +58,11 @@ module "hcloud" {
 module "digitalocean" {
   source = "./digitalocean"
   [[- with .ProcessingVars ]]
+    [[- with .do_project_name ]]
+  do_project_name = "[[ . ]]"
+    [[- end ]]
   do_vpcs = [
-    [[- range .do_vpcs ]]
+    [[- range .private_networks ]]
     {
       name = "[[ .name ]]"
        ip_range = "[[ .ip_range ]]",
@@ -78,6 +81,11 @@ module "digitalocean" {
       [[- end ]]
     region = "[[ .region ]]"
     vpc = "[[ .vpc ]]"
+    tags = {
+        [[- range $key, $value :=  $.Tags ]]
+      "[[ $key ]]" = "[[ $value ]]"
+        [[- end ]]  
+      }
    },
    [[- end ]]
   ]

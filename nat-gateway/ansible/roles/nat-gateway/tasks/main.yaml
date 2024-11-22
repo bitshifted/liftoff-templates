@@ -11,3 +11,4 @@
     force: true
 - name: Reboot server
   reboot:
+    reboot_timeout: 120
