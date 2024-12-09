@@ -1,75 +1,88 @@
 
+[[- with .Terraform.Backend -]]
 terraform {
-[[ with .Terraform.Backend -]]
   backend "[[ .Type ]]" {
     [[- with .Local ]]
     path = "[[ .Path ]]"
     workspace_dir = "[[ .Workspace ]]"
     [[- end ]]
   }
-[[- end ]]
 }
+[[- end ]]
 
 [[ if .Terraform.HasProvider "hcloud" -]]
-module "hcloud" {
-  source = "./hcloud"
- 
-  networks = [
-  [[- with ( index .Variables "hcloud") ]]
-    [[- range  .networks ]]
+module "hcloud_net" {
+  source = "github.com/bitshifted/liftoff-tf-modules//hcloud-net?ref=v1.0.0"
+  [[- with .ProcessingVars ]]
+  hcloud_networks = [
+    [[- range .hcloud_networks ]]
     {
-      name = "[[ .name ]]"
-      ip_range = "[[ .ip_range ]]"
-      [[- with .delete_protection ]]
-      delete_protection = [[ . ]]
-      [[- end ]]
-      [[- with .expose_routes_to_vswitch ]]
-      expose_routes_to_vswitch = [[ . ]]
-      [[- end ]]
-      [[- with .subnets ]]
-      subnets = [
-        [[- range . ]]
-        {
-        type = "[[ .type ]]"
-        region = "[[ .region ]]"
+        name = "[[ .name ]]"
         ip_range = "[[ .ip_range ]]"
-        },
+        [[- with .delete_protection ]]
+        delete_protection = [[ . ]]
         [[- end ]]
-      ]
-      [[- end ]]
-      [[- with .routes ]]
-      routes = [
-        [[- range . ]]
-        {
-          destination = "[[ .destination ]]"
-          gateway = "[[ .gateway ]]"
-        },
+        [[- with .expose_routes_to_vswitch ]]
+        expose_routes_to_vswitch = [[ . ]]
         [[- end ]]
-      ]
-      [[- end ]]
+        labels = {
+        [[- range $key, $value :=  .labels ]]
+          "[[ $key ]]" = "[[ $value ]]"
+          [[- end ]]  
+        }
+        [[- with .subnets ]]
+        subnets = [
+          [[- range . ]]
+          {
+          type = "[[ .type ]]"
+          region = "[[ .region ]]"
+          ip_range = "[[ .ip_range ]]"
+          },
+          [[- end ]]
+        ]
+        [[- end ]]
     },
     [[- end ]]
+  ]
+  hcloud_net_routes = [
+  [[- range .hcloud_net_routes ]]
+  {
+    network_id = "[[ .network_id ]]"
+    destination = "[[ .destination ]]"
+    gateway = "[[ .gateway ]]"
+  },
   [[- end ]]
   ]
+  hcloud_global_labels = {
+  [[- range $key, $value := $.Tags ]]
+    "[[ $key ]]" = "[[ $value ]]"
+  [[- end ]]
+  }
+[[- end ]]
 }
 [[- end ]]
 
-[[ if .Terraform.HasProvider "digitalocean" -]]
-module "digitalocean" {
-  source = "./digitalocean"
-  vpcs = [
-  [[- with ( index .Variables "digitalocean") ]]
-    [[- range .vpcs ]]
-    {
-      name = "[[ .name ]]"
-      region = "[[ .region ]]"
-      ip_range = "[[ .ip_range ]]"
-      [[- with .description ]]
-      description = "[[ . ]]"
-      [[- end ]]
-    },
+[[- if .Terraform.HasProvider "digitalocean" ]]
+module "docean_net" {
+  source = "github.com/bitshifted/liftoff-tf-modules//digitalocean-net?ref=v1.0.0"
+  [[ with .ProcessingVars ]]
+   docean_vpcs = [
+   [[- range .docean_vpcs ]]
+   {
+    name = "[[ .name ]]"
+    ip_range = "[[ .ip_range ]]"
+    region = "[[ .region ]]"
+    [[- with .description ]]
+    description = "[[ . ]]"
     [[- end ]]
+    [[- with .project_name ]]
+    project_name = "[[ . ]]"
+    [[- end ]]
+   },
+   [[- end ]]
+   ]
   [[- end ]]
-  ]
 }
 [[- end ]]
+
+
