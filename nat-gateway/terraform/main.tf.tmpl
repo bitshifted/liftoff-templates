@@ -11,7 +11,7 @@ terraform {
 
 [[- if .Terraform.HasProvider "hcloud" -]]
 module "hcloud_compute" {
-    source = "github.com/bitshifted/liftoff-tf-modules//hcloud-compute?ref=v1.0.1"
+    source = "github.com/bitshifted/liftoff-tf-modules//hcloud-compute?ref=v1.0.2"
     [[- with .ProcessingVars ]]
         [[- with .hcloud_server_config ]]
     hcloud_server_config = {
@@ -144,5 +144,21 @@ module "hcloud_compute" {
     }
         [[- end ]]
     [[- end ]]
+}
+
+output "compute_out" {
+    value = module.hcloud_compute.server_info
+}
+
+module "hcloud_net" {
+    source = "github.com/bitshifted/liftoff-tf-modules//hcloud-net?ref=v1.0.2"
+
+    hcloud_net_routes = flatten([for key,value in module.hcloud_compute.server_info: [
+        for val in value: {
+            network_id = val.net_id
+            destination = "0.0.0.0/0"
+            gateway = val.ip_address
+        }
+    ]])
 }
 [[- end ]]
