@@ -1,5 +1,6 @@
-ssh_pwauth: false
+#cloud-config
 
+ssh_pwauth: false
 users:
   - default
   # Configure server to be managed by Ansible
