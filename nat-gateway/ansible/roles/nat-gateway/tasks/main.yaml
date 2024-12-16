@@ -1,0 +1,30 @@
+---
+- name: Configure IP forwarding
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    value: 1
+    state: present
+    reload: true
+- name: Configure iptables
+  ansible.builtin.iptables:
+    table: nat
+    chain: POSTROUTING
+    out_interface: eth0
+    source: "{{ item  }}"
+    jump: MASQUERADE
+  loop: "{{ ip_ranges }}"
+- name: IP forwarding persistent configuration
+  ansible.builtin.copy:
+    src: 50-cloud-init.yaml
+    dest: /etc/netplan/50-cloud-init.yaml
+    owner: root
+    group: root
+    mode: '0644'
+- name: Persist iptables configuration
+  ansible.builtin.template:
+    src: 10-eth0-post-up.j2
+    dest: /etc/networkd-dispatcher/routable.d/10-eth0-post-up
+    force: true
+    owner: root
+    group: root
+    mode: '0755'
