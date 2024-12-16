@@ -1,0 +1,6 @@
+
+[[- if .Terraform.HasProvider "hcloud" -]]
+output "nat_gw_info" {
+    value = module.hcloud_compute.server_info
+}
+[[- end ]]
