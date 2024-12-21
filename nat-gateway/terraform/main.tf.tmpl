@@ -155,3 +155,62 @@ module "hcloud_net" {
     ]])
 }
 [[- end ]]
+
+[[- if .Terraform.HasProvider "digitalocean" ]]
+module "docean_compute" {
+    source = "github.com/bitshifted/liftoff-tf-modules//digitalocean-compute?ref=v1.1.0"
+     [[ with .ProcessingVars ]]
+        [[- with .docean_server_config ]]
+    docean_server_config = {
+            [[- with .server_name ]]
+        server_name = "[[ . ]]"
+            [[- end ]]
+            [[- with .os_image ]]
+        os_image = "[[ . ]]"
+            [[- end ]]
+            [[- with .instance_type ]]
+        instance_type = "[[ . ]]"
+            [[- end ]]
+            [[- with .location ]]
+        region = "[[ . ]]"
+            [[- end ]]
+         user_data_file_path =  "[[- or .user_data_file_path "./cloud-config.yaml" ]]"
+            [[- with .ssh_key_names ]]
+        ssh_key_names = [
+                [[- range . ]]
+                "[[ . ]]",
+                [[- end ]]
+        ]
+            [[- end ]]
+            [[- with .enable_public_ipv6 ]]
+        enable_public_ipv6 = [[ . ]]
+            [[- end ]]
+            [[- with .tags ]]
+        tags = [
+            [[- range . ]]
+            "[[ . ]]",
+            [[- end ]]
+        ]
+            [[- end ]]
+            [[- with .resize_disk ]]
+        resize_disk = [[ . ]]
+            [[- end ]]
+            [[- with .enable_backups ]]
+        enable_backups = [[ . ]]
+            [[- end ]]
+            [[- with .vpc_name ]]
+        vpc_name = "[[ . ]]"
+            [[- end ]]
+            [[- with .project_name ]]
+        project_name = "[[ . ]]"
+            [[- end ]]
+             [[- with .num_servers ]]
+        num_servers = [[ . ]]
+            [[- end ]]
+
+    }
+        [[- end ]]
+    [[- end ]]
+}
+    
+[[- end ]]
