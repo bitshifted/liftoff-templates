@@ -1,6 +1,9 @@
 
-[[- if .Terraform.HasProvider "hcloud" -]]
-output "nat_gw_info" {
-    value = module.hcloud_compute.server_info
+locals {
+    hcloud_gw_info = [[ if .Terraform.HasProvider "hcloud" -]] module.hcloud_compute.server_info [[- else -]] {} [[- end ]]
+    docean_gw_info = [[ if .Terraform.HasProvider "digitalocean" -]] module.docean_compute.server_info [[- else -]] {} [[- end ]]
 }
-[[- end ]]
+
+output "nat_gw_info" {
+    value = merge(local.hcloud_gw_info, local.docean_gw_info)
+}
