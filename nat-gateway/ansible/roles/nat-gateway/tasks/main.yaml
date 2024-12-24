@@ -10,7 +10,7 @@
     table: nat
     chain: POSTROUTING
     out_interface: eth0
-    source: "{{ item  }}"
+    source: "{{ item }}"
     jump: MASQUERADE
   loop: "{{ ip_ranges }}"
 - name: IP forwarding persistent configuration
