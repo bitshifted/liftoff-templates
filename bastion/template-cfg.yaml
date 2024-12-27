@@ -1,0 +1,3 @@
+---
+terraform-extra-dir: ../generic-compute-tf
+ansible-roles-dir: ../ansible-roles
