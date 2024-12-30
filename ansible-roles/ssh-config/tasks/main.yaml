@@ -9,7 +9,7 @@
     name: bastion
     state: present
     shell: /usr/sbin/nologin
-  when: bastion_host
+  when: "{{ bastion_host | default(false) }}"
 - name: Setup hardened SSH configuration
   ansible.builtin.copy:
     src: 10-liftoff-ssh.conf
@@ -19,5 +19,5 @@
     mode: '0600'
 - name: Reload SSH configuration
   ansible.builtin.systemd:
-    name: sshd
+    name: ssh
     state: reloaded

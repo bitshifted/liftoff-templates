@@ -4,4 +4,6 @@
   become: true
   roles:
     - nat-gateway
+    - role: ssh-config
+      bastion_host: [[ .ProcessingVars.bastion_host ]]
     - ufw
