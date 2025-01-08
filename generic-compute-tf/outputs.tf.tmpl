@@ -2,8 +2,9 @@
 locals {
     hcloud_srv_info = [[ if .Terraform.HasProvider "hcloud" -]] module.hcloud_compute.server_info [[- else -]] {} [[- end ]]
     docean_srv_info = [[ if .Terraform.HasProvider "digitalocean" -]] module.docean_compute.server_info [[- else -]] {} [[- end ]]
+    all_srv_info = merge(local.hcloud_srv_info, local.docean_srv_info)
 }
 
 output "server_info" {
-    value = merge(local.hcloud_srv_info, local.docean_srv_info)
+    value = local.all_srv_info
 }

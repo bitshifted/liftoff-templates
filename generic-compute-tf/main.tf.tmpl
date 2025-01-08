@@ -11,7 +11,7 @@ terraform {
 
 [[- if .Terraform.HasProvider "hcloud" -]]
 module "hcloud_compute" {
-    source = "github.com/bitshifted/liftoff-tf-modules//hcloud-compute?ref=v1.1.1"
+    source = "github.com/bitshifted/liftoff-tf-modules//hcloud-compute?ref=v1.5.0"
     [[- with .ProcessingVars ]]
         # Configuration for hcloud server
         [[- with .hcloud_server_config ]]
@@ -60,6 +60,9 @@ module "hcloud_compute" {
             [[- end ]]
             [[- with .enable_delete_protection ]]
         enable_delete_protection = [[ . ]]
+            [[- end ]]
+            [[- with .dns_zone ]]
+        dns_zone = "[[ . ]]"
             [[- end ]]
             [[- with .private_networks ]]
         private_networks = [
@@ -123,6 +126,9 @@ module "hcloud_compute" {
             [[- with .enable_delete_protection ]]
         enable_delete_protection = [[ . ]]
             [[- end ]]
+             [[- with .dns_zone ]]
+        dns_zone = "[[ . ]]"
+            [[- end ]]
             [[- with .private_networks ]]
         private_networks = [
                 [[- range . ]]
@@ -149,7 +155,7 @@ module "hcloud_compute" {
 
 [[- if .Terraform.HasProvider "digitalocean" ]]
 module "docean_compute" {
-    source = "github.com/bitshifted/liftoff-tf-modules//digitalocean-compute?ref=v1.1.1"
+    source = "github.com/bitshifted/liftoff-tf-modules//digitalocean-compute?ref=v1.5.0"
      [[ with .ProcessingVars ]]
     [[/* Configuration for docean server */]]
         [[- with .docean_server_config ]]
@@ -195,6 +201,9 @@ module "docean_compute" {
             [[- end ]]
             [[- with .project_name ]]
         project_name = "[[ . ]]"
+            [[- end ]]
+             [[- with .dns_zone ]]
+        dns_zone = "[[ . ]]"
             [[- end ]]
              [[- with .num_servers ]]
         num_servers = [[ . ]]
@@ -250,6 +259,9 @@ module "docean_compute" {
             [[- with .project_name ]]
         project_name = "[[ . ]]"
             [[- end ]]
+             [[- with .dns_zone ]]
+        dns_zone = "[[ . ]]"
+            [[- end ]]
         },
             [[- end ]]
     ]
@@ -258,4 +270,16 @@ module "docean_compute" {
     [[- end ]]
 }
     
+[[- end ]]
+
+[[- if .Terraform.HasProvider "hetznerdns" ]]
+module "hetznerdns" {
+    source = "github.com/bitshifted/liftoff-tf-modules//hetzner-dns?ref=v1.5.0"
+    hcloud_dns_records = [for key,srvi in local.all_srv_info: {
+        zone = srvi.dns_zone
+        type = "A"
+        name = key
+        value = srvi.public_ip_v4
+    } ]
+}
 [[- end ]]
