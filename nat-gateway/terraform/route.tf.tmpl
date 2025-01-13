@@ -1,0 +1,14 @@
+
+[[- if .Terraform.HasProvider "hcloud" -]]
+module "hcloud_net" {
+    source = "github.com/bitshifted/liftoff-tf-modules//hcloud-net?ref=v1.0.4"
+
+    hcloud_net_routes = flatten([for key,value in module.hcloud_compute.server_info: [
+        for val in value.private_net_info: {
+            network_id = val.net_id
+            destination = "0.0.0.0/0"
+            gateway = val.ip_address
+        }
+    ]])
+}
+[[- end ]]
