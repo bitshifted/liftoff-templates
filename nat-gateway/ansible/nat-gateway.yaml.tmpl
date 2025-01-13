@@ -5,5 +5,5 @@
   roles:
     - nat-gateway
     - role: ssh-config
-      bastion_host: [[ .ProcessingVars.bastion_host ]]
+      [[- with .ProcessingVars.bastion_host ]]bastion_host: [[ . ]][[ end ]]
     - ufw
