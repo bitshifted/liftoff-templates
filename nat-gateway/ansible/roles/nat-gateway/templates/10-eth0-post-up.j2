@@ -2,5 +2,5 @@
 
 echo 1 > /proc/sys/net/ipv4/ip_forward
 {% for ip_range in ip_ranges %}
-    post-up iptables -t nat -A POSTROUTING -s '{{ ip_range }}' -o eth0 -j MASQUERADE
+iptables -t nat -A POSTROUTING -s '{{ ip_range }}' -o eth0 -j MASQUERADE
 {% endfor %}
