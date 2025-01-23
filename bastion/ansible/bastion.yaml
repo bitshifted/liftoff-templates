@@ -1,0 +1,8 @@
+---
+- name: Configure Bastion Host
+  hosts: all
+  become: true
+  roles:
+    - role: ssh-config
+      bastion_host: true
+    - ufw

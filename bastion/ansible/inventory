@@ -1,0 +1,10 @@
+[bastion]
+[[- range $key, $value := .ProcessingVars.server_info ]]
+[[- $first := true ]]
+[[ $value.public_ip_v4 ]]
+[[- end ]]
+
+[bastion:vars]
+ansible_ssh_private_key_file=[[ .ProcessingVars.ansible_ssh_private_key ]]
+ansible_ssh_common_args='-o StrictHostKeyChecking=[[ .ProcessingVars.absible_host_key_checking ]]'
+ansible_user=[[ .ProcessingVars.ansible_user ]]
