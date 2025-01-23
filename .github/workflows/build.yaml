@@ -7,6 +7,8 @@ on:
 jobs:
   validate-configuration:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.calculate-version.outputs.version-string }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -28,3 +30,22 @@ jobs:
         with:
           create_tag: true
           initial_version: 1.0.0
+  # Create release
+  create-release:
+    if:  ${{ github.event_name == 'push' }}
+    needs: validate-configuration
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          tag_name: v${{ needs.validate-configuration.outputs.version }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+            
