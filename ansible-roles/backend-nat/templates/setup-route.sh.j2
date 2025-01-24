@@ -1,0 +1,6 @@
+#! /bin/bash
+
+ip route add default via {{ gateway_ip }}
+
+# finish command
+touch /tmp/setup-route.sh.done

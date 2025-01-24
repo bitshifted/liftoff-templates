@@ -1,0 +1,7 @@
+[Match]
+Name={{ private_interface | default('enp7s0') }}
+
+[Network]
+DHCP=yes
+Gateway={{ gateway_ip }}
+EOF
