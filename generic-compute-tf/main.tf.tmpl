@@ -11,7 +11,7 @@ terraform {
 
 [[- if .Terraform.HasProvider "hcloud" -]]
 module "hcloud_compute" {
-    source = "github.com/bitshifted/liftoff-tf-modules//hcloud-compute?ref=v1.5.0"
+    source = "github.com/bitshifted/liftoff-tf-modules//hcloud-compute?ref=v1.6.0"
     [[- with .ProcessingVars ]]
         # Configuration for hcloud server
         [[- with .hcloud_server_config ]]
@@ -155,7 +155,7 @@ module "hcloud_compute" {
 
 [[- if .Terraform.HasProvider "digitalocean" ]]
 module "docean_compute" {
-    source = "github.com/bitshifted/liftoff-tf-modules//digitalocean-compute?ref=v1.5.0"
+    source = "github.com/bitshifted/liftoff-tf-modules//digitalocean-compute?ref=v1.6.0"
      [[ with .ProcessingVars ]]
     [[/* Configuration for docean server */]]
         [[- with .docean_server_config ]]
@@ -272,7 +272,7 @@ module "docean_compute" {
 
 [[- if  .ProcessingVars.use_docean_dns ]]
 module "docean_dns" {
-    source = "github.com/bitshifted/liftoff-tf-modules//digitalocean-dns?ref=v1.5.0"
+    source = "github.com/bitshifted/liftoff-tf-modules//digitalocean-dns?ref=v1.6.0"
     do_dns_records = [for key,srvi in local.all_srv_info: {
         zone = srvi.dns_zone
         type = "A"
@@ -286,7 +286,7 @@ module "docean_dns" {
 
 [[- if .Terraform.HasProvider "hetznerdns" ]]
 module "hetznerdns" {
-    source = "github.com/bitshifted/liftoff-tf-modules//hetzner-dns?ref=v1.5.0"
+    source = "github.com/bitshifted/liftoff-tf-modules//hetzner-dns?ref=v1.6.0"
     hcloud_dns_records = [for key,srvi in local.all_srv_info: {
         zone = srvi.dns_zone
         type = "A"
@@ -298,7 +298,7 @@ module "hetznerdns" {
 
 [[- if .Terraform.HasProvider "cloudflare" ]]
 module "cloudflare_dns" {
-    source = "github.com/bitshifted/liftoff-tf-modules//cloudflare-dns?ref=v1.5.0"
+    source = "github.com/bitshifted/liftoff-tf-modules//cloudflare-dns?ref=v1.6.0"
     cf_dns_records = [for key,srvi in local.all_srv_info: {
         zone = srvi.dns_zone
         type = "A"
