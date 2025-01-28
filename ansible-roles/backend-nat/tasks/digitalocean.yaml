@@ -1,0 +1,12 @@
+---
+- name: Copy scripts
+  ansible.builtin.template:
+    src: setup-route-do.sh.j2
+    dest: /tmp/setup-route-do.sh
+    owner: root
+    group: root
+    mode: '0755'
+- name: Execute scripts
+  ansible.builtin.command:
+    cmd: /tmp/setup-route-do.sh
+    creates: /tmp/setup-route-do.sh.done
