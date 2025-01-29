@@ -11,7 +11,7 @@ terraform {
 
 [[- if .Terraform.HasProvider "hcloud" -]]
 module "hcloud_compute" {
-    source = "github.com/bitshifted/liftoff-tf-modules//hcloud-compute?ref=v1.5.0"
+    source = "github.com/bitshifted/liftoff-tf-modules//hcloud-compute?ref=v1.6.0"
     [[- with .ProcessingVars ]]
         # Configuration for hcloud server
         [[- with .hcloud_server_config ]]
@@ -39,11 +39,11 @@ module "hcloud_compute" {
                 [[- end ]]
         ]
             [[- end ]]
-            [[- with .enable_public_ipv4 ]]
-        enable_public_ipv4 = [[ . ]]
+            [[- if not (eq .enable_public_ipv4 nil) ]]
+        enable_public_ipv4 = [[ .enable_public_ipv4 ]]
             [[- end ]]
-             [[- with .enable_public_ipv6 ]]
-        enable_public_ipv6 = [[ . ]]
+             [[- if not (eq .enable_public_ipv6 nil) ]]
+        enable_public_ipv6 = [[ .enable_public_ipv6 ]]
             [[- end ]]
             [[- with .labels ]]
         labels = {
@@ -52,14 +52,14 @@ module "hcloud_compute" {
                 [[- end ]]
         }
             [[- end ]]
-            [[- with .keep_disk ]]
-        keep_disk = [[ . ]]
+            [[- if not (eq .keep_disk nil) ]]
+        keep_disk = [[ .keep_disk ]]
             [[- end ]]
-            [[- with .enable_backups ]]
-        enable_backups = [[ . ]]
+            [[- if not (eq .enable_backups nil) ]]
+        enable_backups = [[ .enable_backups ]]
             [[- end ]]
-            [[- with .enable_delete_protection ]]
-        enable_delete_protection = [[ . ]]
+            [[- if not (eq .enable_delete_protection nil) ]]
+        enable_delete_protection = [[ .enable_delete_protection ]]
             [[- end ]]
             [[- with .dns_zone ]]
         dns_zone = "[[ . ]]"
@@ -104,11 +104,11 @@ module "hcloud_compute" {
                 [[- end ]]
         ]
             [[- end ]]
-            [[- with .enable_public_ipv4 ]]
-        enable_public_ipv4 = [[ . ]]
+            [[- if not (eq .enable_public_ipv4 nil) ]]
+        enable_public_ipv4 = [[ .enable_public_ipv4 ]]
             [[- end ]]
-             [[- with .enable_public_ipv6 ]]
-        enable_public_ipv6 = [[ . ]]
+             [[- if not (eq .enable_public_ipv6 nil) ]]
+        enable_public_ipv6 = [[ .enable_public_ipv6 ]]
             [[- end ]]
             [[- with .labels ]]
         labels = {
@@ -117,14 +117,14 @@ module "hcloud_compute" {
                 [[- end ]]
         }
             [[- end ]]
-            [[- with .keep_disk ]]
-        keep_disk = [[ . ]]
+            [[- if not (eq .keep_disk nil) ]]
+        keep_disk = [[ .keep_disk ]]
             [[- end ]]
-            [[- with .enable_backups ]]
-        enable_backups = [[ . ]]
+            [[- if not (eq .enable_backups nil ) ]]
+        enable_backups = [[ .enable_backups ]]
             [[- end ]]
-            [[- with .enable_delete_protection ]]
-        enable_delete_protection = [[ . ]]
+            [[- if not (eq .enable_delete_protection nil) ]]
+        enable_delete_protection = [[ .enable_delete_protection ]]
             [[- end ]]
              [[- with .dns_zone ]]
         dns_zone = "[[ . ]]"
@@ -155,7 +155,7 @@ module "hcloud_compute" {
 
 [[- if .Terraform.HasProvider "digitalocean" ]]
 module "docean_compute" {
-    source = "github.com/bitshifted/liftoff-tf-modules//digitalocean-compute?ref=v1.5.0"
+    source = "github.com/bitshifted/liftoff-tf-modules//digitalocean-compute?ref=v1.6.0"
      [[ with .ProcessingVars ]]
     [[/* Configuration for docean server */]]
         [[- with .docean_server_config ]]
@@ -272,7 +272,7 @@ module "docean_compute" {
 
 [[- if  .ProcessingVars.use_docean_dns ]]
 module "docean_dns" {
-    source = "github.com/bitshifted/liftoff-tf-modules//digitalocean-dns?ref=v1.5.0"
+    source = "github.com/bitshifted/liftoff-tf-modules//digitalocean-dns?ref=v1.6.0"
     do_dns_records = [for key,srvi in local.all_srv_info: {
         zone = srvi.dns_zone
         type = "A"
@@ -286,7 +286,7 @@ module "docean_dns" {
 
 [[- if .Terraform.HasProvider "hetznerdns" ]]
 module "hetznerdns" {
-    source = "github.com/bitshifted/liftoff-tf-modules//hetzner-dns?ref=v1.5.0"
+    source = "github.com/bitshifted/liftoff-tf-modules//hetzner-dns?ref=v1.6.0"
     hcloud_dns_records = [for key,srvi in local.all_srv_info: {
         zone = srvi.dns_zone
         type = "A"
@@ -297,8 +297,8 @@ module "hetznerdns" {
 [[- end ]]
 
 [[- if .Terraform.HasProvider "cloudflare" ]]
-module "hetznerdns" {
-    source = "github.com/bitshifted/liftoff-tf-modules//cloudflare-dns?ref=v1.5.0"
+module "cloudflare_dns" {
+    source = "github.com/bitshifted/liftoff-tf-modules//cloudflare-dns?ref=v1.6.0"
     cf_dns_records = [for key,srvi in local.all_srv_info: {
         zone = srvi.dns_zone
         type = "A"

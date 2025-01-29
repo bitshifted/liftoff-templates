@@ -10,6 +10,7 @@
     rule: allow
     port: "{{ ssh_port | default('22') }}"
     proto: tcp
+    from_ip: "{{ ssh_allowed_ip | default('any') }}"
 
 - name: Configure specific incoming rules
   community.general.ufw:
@@ -19,6 +20,15 @@
     proto: "{{ item.proto }}"
     from_ip: "{{ item.from_ip | default('any') }}"
   loop: "{{ ufw_rules | default([]) }}"
+
+- name: Allow routed DNS queries
+  community.general.ufw:
+    rule: allow
+    route: true
+    interface_in: "{{ item }}"
+    interface_out: "{{ public_interface | default('eth0') }}"
+  loop: "{{ private_interfaces | default(['enp7s0']) }}"
+  when: "enable_packet_routing | default(false)"
 
 - name: Disable all incoming connections by default
   community.general.ufw:

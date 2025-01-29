@@ -1,0 +1,8 @@
+---
+- name: Wait untill server is ready
+  ansible.builtin.wait_for:
+    timeout: 300
+    sleep: 10
+- name: Configure Hetzner Cloud instance
+  ansible.builtin.include_tasks: hcloud.yaml
+  when: provider == 'hcloud'
