@@ -10,6 +10,7 @@
     rule: allow
     port: "{{ ssh_port | default('22') }}"
     proto: tcp
+    from_ip: "{{ ssh_allowed_ip | default('any') }}"
 
 - name: Configure specific incoming rules
   community.general.ufw:
