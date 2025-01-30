@@ -1,5 +1,5 @@
 ---
-- name: Add Postgresql APT repository keyy
+- name: Add Postgresql APT repository key
   ansible.builtin.apt_key:
     url: "{{ pg_apt_repo_key }}"
     state: present
@@ -40,8 +40,9 @@
     contype: hostssl
     databases: all
     users: postgres
-    address: "{{ pg_hba_allowed_addresses }}"
+    address: "{{ item }}"
     method: "{{ pg_hba_method }}"
+  loop: "{{ ip_ranges }}"
 - name: Restart Postgresql service
   ansible.builtin.systemd:
     name: postgresql
