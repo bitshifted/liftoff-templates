@@ -1,8 +1,13 @@
 ---
 - name: Wait untill server is ready
-  ansible.builtin.wait_for:
+  ansible.builtin.wait_for_connection:
     timeout: 300
     sleep: 10
+- name: Install ACL package
+  ansible.builtin.apt:
+    name: acl
+    state: present
+    update_cache: true
 - name: Configure Hetzner Cloud instance
   ansible.builtin.include_tasks: hcloud.yaml
   when: provider == 'hcloud'

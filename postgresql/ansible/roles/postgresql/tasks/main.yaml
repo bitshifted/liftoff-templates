@@ -1,0 +1,49 @@
+---
+- name: Add Postgresql APT repository key
+  ansible.builtin.apt_key:
+    url: "{{ pg_apt_repo_key }}"
+    state: present
+- name: Add Postgresql repo to source list
+  ansible.builtin.apt_repository:
+    repo: "deb http://apt.postgresql.org/pub/repos/apt/ {{ distro }}-pgdg main"
+    state: present
+- name: Install PotgreSQL required packages
+  ansible.builtin.apt:
+    pkg:
+      - "postgresql-{{ pg_version }}"
+      - python3-pip
+      - python3-psycopg2 # required to use 'postgresql_db' module
+    state: present
+    update_cache: true
+- name: Listen to all interfaces
+  ansible.builtin.lineinfile:
+    path: "/etc/postgresql/{{ pg_version }}/main/postgresql.conf"
+    regexp: "^#listen_address"
+    line: "listen_addresses = '*'"
+- name: Configure database port
+  ansible.builtin.lineinfile:
+    path: "/etc/postgresql/{{ pg_version }}/main/postgresql.conf"
+    regexp: "^#port"
+    line: "port = {{ pg_port }}"
+  when: pg_port != 5432
+- name: Change password for postgres user
+  become: true
+  become_user: postgres
+  community.postgresql.postgresql_user:
+    name: postgres
+    password: "{{ pg_user_password }}"
+- name: Configure access (pg_hba.conf)
+  become: true
+  become_user: postgres
+  community.postgresql.postgresql_pg_hba:
+    dest: "/etc/postgresql/{{ pg_version }}/main/pg_hba.conf"
+    contype: hostssl
+    databases: all
+    users: postgres
+    address: "{{ item }}"
+    method: "{{ pg_hba_method }}"
+  loop: "{{ ip_ranges }}"
+- name: Restart Postgresql service
+  ansible.builtin.systemd:
+    name: postgresql
+    state: restarted
