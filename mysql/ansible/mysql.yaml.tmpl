@@ -1,0 +1,14 @@
+---
+- name: Configure MySQL server
+  hosts: all
+  become: true
+  roles:
+    - role: backend-nat
+      [[- with .ProcessingVars.gateway_ip ]]
+      gateway_ip: "[[ . ]]" 
+      [[- end ]]
+      [[- with .ProcessingVars.dns_servers ]]
+      dns_servers: [[ . ]] 
+      [[- end ]]
+    - role: ssh-config
+    - role: mysql
