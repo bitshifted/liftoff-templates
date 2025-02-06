@@ -1,0 +1,10 @@
+[ client ]
+port = {{ mysql_port }}
+
+[ mysqld ]
+port = {{ mysql_port }}
+{% if localhost_only %}
+bind-address = 127.0.0.1
+{% else %}
+bind-address = 0.0.0.0
+{% endif %}

@@ -1,0 +1,11 @@
+[mysql]
+[[- range $key, $value := .ProcessingVars.server_info ]]
+[[- $first := true ]]
+[[ (index $value.private_net_info 0).ip_address ]] ip_ranges='[ [[- range $value.private_net_info ]] [[- if $first ]] [[- $first = false ]] [[- else ]],[[- end ]]"[[ .ip_range ]]" [[- end  -]] ]' provider='[[ $value.provider ]]'
+[[- end ]]
+
+[mysql:vars]
+ansible_ssh_private_key_file=[[ .ProcessingVars.ansible_ssh_private_key ]]
+ansible_user=[[ .ProcessingVars.ansible_user ]]
+ansible_ssh_common_args='-vvv -o StrictHostKeyChecking=[[ or .ProcessingVars.absible_host_key_checking "no" ]] -o IdentityFile=[[ .ProcessingVars.ansible_ssh_private_key ]] -o ForwardAgent=yes [[ with .ProcessingVars.bastion_address ]] -o ProxyCommand="ssh  -W %h:%p -q ansible@[[ . ]]"[[ end]]'
+

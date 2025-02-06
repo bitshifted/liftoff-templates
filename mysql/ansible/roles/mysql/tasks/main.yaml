@@ -1,0 +1,35 @@
+---
+- name: Get MySQL APT key
+  ansible.builtin.apt_key:
+    keyserver: "{{ mysql_key_server }}"
+    id: "{{ mysql_key_id }}"
+    state: present
+- name: Add MySQL repo to source list
+  ansible.builtin.apt_repository:
+    repo: "deb http://repo.mysql.com/apt/ubuntu/ {{ distro }} {{ mysql_series }}"
+    state: present
+- name: Install MySQL server
+  ansible.builtin.apt:
+    pkg:
+      - mysql-server
+      - python3-pip
+      - python3-mysqldb # required to use 'mysql_db' module
+    state: present
+    update_cache: true
+- name: Custom configuration
+  ansible.builtin.template:
+    src: 10-liftoff-mysql.cnf.j2
+    dest: /etc/mysql/conf.d/10-liftoff-mysql.cnf
+    mode: '0644'
+- name: Configure MySQL root user
+  community.mysql.mysql_user:
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    name: root
+    plugin: sha256_password
+    plugin_auth_string: "{{ mysql_root_password }}"
+    host: "localhost"
+- name: Restart Mysql service
+  ansible.builtin.systemd:
+    name: mysql
+    state: restarted
