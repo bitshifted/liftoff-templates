@@ -12,3 +12,13 @@
       [[- end ]]
     - role: ssh-config
     - role: mysql
+    - role: ufw
+      [[ with .ProcessingVars.ssh_allowed_ip ]]ssh_allowed_ip: "[[ . ]]" [[- end ]]
+      ufw_rules:
+      [[- range .ProcessingVars.server_info ]]
+        [[- range .private_net_info ]]
+        - port: [[ or $.ProcessingVars.mysql_port 3306 ]]
+          proto: "tcp"
+          from_ip: [[ .ip_range ]]
+        [[- end ]]
+      [[- end ]]

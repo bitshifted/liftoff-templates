@@ -2,4 +2,7 @@
 mysql_key_server: pgp.mit.edu
 mysql_key_id: A8D3785C
 mysql_series: mysql-8.4-lts
+mysql_port: 3306
+mysql_root_password: mysql-user-password-123
 distro: noble
+localhost_only: false
