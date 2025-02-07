@@ -1,0 +1,55 @@
+---
+- name: Install PostgreSQL
+  include_tasks: install.yaml
+  when: "'install' in operations"
+- name: Create PostgreSQL user
+  become: true
+  become_user: "{{ pg_user }}"
+  community.postgresql.postgresql_user:
+    login_host: "{{ db_host }}"
+    login_user: "{{ pg_user }}"
+    login_password: "{{ pg_user_password }}"
+    login_port: "{{ pg_port }}"
+    name: "{{ item.username }}"
+    password: "{{ item.password }}"
+    state: present
+  loop: "{{ db_users | default([]) }}"
+  when: "'create_user' in operations"
+- name: Add created users to pg_hba file
+  community.postgresql.postgresql_pg_hba:
+    dest: "/etc/postgresql/{{ pg_version }}/main/pg_hba.conf"
+    contype: hostssl
+    databases: all
+    users: "{{ item[0].username }}"
+    address: "{{ item[1] }}"
+    method: "{{ pg_hba_method }}"
+  loop: "{{ db_users | product(ip_ranges) | list | default([]) }}"
+  when: not localhost_only and "'create_user' in operations"
+- name: Create PostgreSQL database
+  become: true
+  become_user: "{{ pg_user }}"
+  community.postgresql.postgresql_db:
+    login_host: "{{ db_host }}"
+    login_user: "{{ pg_user }}"
+    login_password: "{{ pg_user_password }}"
+    login_port: "{{ pg_port }}"
+    name: "{{ item.db_name }}"
+    owner: "{{ item.owner }}"
+    state: present
+  loop: "{{ databases | default([]) }}"
+  when: "'create_db' in operations"
+- name: Manage database privileges
+  become: true
+  become_user: "{{ pg_user }}"
+  community.postgresql.postgresql_privs:
+    type: database
+    database: "{{ item.db_name }}"
+    roles: "{{ item.roles }}"
+    grant_option: "{{ item.grant_option }}"
+    privs: "{{ item.privileges }}"
+  loop: "{{ privileges | default([]) }}"
+  when: "'manage_privs' in operations"
+- name: Restart Postgresql service
+  ansible.builtin.systemd:
+    name: postgresql
+    state: restarted
