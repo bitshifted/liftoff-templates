@@ -21,6 +21,30 @@
       [[- with .ProcessingVars.pg_port ]]
       pg_port: [[ . ]] 
       [[- end ]]
+      [[- with .ProcessingVars.localhost_only ]]
+      localhost_only: [[ . ]] 
+      [[- end ]]
+      db_users:
+      [[- range .ProcessingVars.db_users ]]
+        - username: "[[ .username ]]"
+          password: "[[ .password ]]" 
+      [[- end ]]
+      databases:
+      [[- range .ProcessingVars.databases ]]
+        - db_name: "[[ .db_name ]]"
+          owner: "[[ .owner ]]" 
+      [[- end ]]
+      db_privileges:
+      [[- range .ProcessingVars.db_privileges ]]
+        - db_name: "[[ .db_name ]]"
+          roles: "[[ .roles ]]"
+          privileges: "[[ .privileges ]]"
+          grant_option: [[ .grant_option ]]
+      [[- end ]]
+      operations:
+      [[- range .ProcessingVars.operations ]]
+        - [[ . ]]
+      [[- end ]]
     - role: ufw
       [[ with .ProcessingVars.ssh_allowed_ip ]]ssh_allowed_ip: "[[ . ]]" [[- end ]]
       ufw_rules:

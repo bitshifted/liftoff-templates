@@ -26,12 +26,6 @@
     regexp: "^#port"
     line: "port = {{ pg_port }}"
   when: pg_port != 5432
-- name: Change password for postgres user
-  become: true
-  become_user: postgres
-  community.postgresql.postgresql_user:
-    name: postgres
-    password: "{{ pg_user_password }}"
 - name: Configure access (pg_hba.conf)
   become: true
   become_user: postgres
@@ -43,7 +37,15 @@
     address: "{{ item }}"
     method: "{{ pg_hba_method }}"
   loop: "{{ ip_ranges }}"
+  when: not localhost_only
 - name: Restart Postgresql service
   ansible.builtin.systemd:
     name: postgresql
     state: restarted
+- name: Change password for postgres user
+  become: true
+  become_user: postgres
+  community.postgresql.postgresql_user:
+    name: postgres
+    password: "{{ pg_user_password }}"
+    port: "{{ pg_port }}"
