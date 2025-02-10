@@ -1,0 +1,4 @@
+---
+- name: Install MySQL
+  include_tasks: install.yaml
+  when: "'install' in operations"

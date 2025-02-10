@@ -21,15 +21,23 @@
     src: 10-liftoff-mysql.cnf.j2
     dest: /etc/mysql/conf.d/10-liftoff-mysql.cnf
     mode: '0644'
-- name: Configure MySQL root user
-  community.mysql.mysql_user:
-    login_user: root
-    login_password: "{{ mysql_root_password }}"
-    name: root
-    plugin: sha256_password
-    plugin_auth_string: "{{ mysql_root_password }}"
-    host: "localhost"
 - name: Restart Mysql service
   ansible.builtin.systemd:
     name: mysql
     state: restarted
+- name: Change password for root user
+  community.mysql.mysql_user:
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_port: "{{ mysql_port }}"
+    login_host: "{{ db_host }}"
+    check_implicit_admin: true
+    name: root
+    password: "{{ mysql_root_password }}"
+    salt: "{{ lookup('community.general.random_string', length=20) }}"
+    plugin: sha256_password
+    plugin_auth_string: "{{ mysql_root_password }}"
+    with_items:
+      - "localhost"
+      - "127.0.0.1"
+      - "::1"
