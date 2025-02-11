@@ -5,7 +5,5 @@
 [[- end ]]
 
 [mysql:vars]
-ansible_ssh_private_key_file=[[ .ProcessingVars.ansible_ssh_private_key ]]
-ansible_user=[[ .ProcessingVars.ansible_user ]]
-ansible_ssh_common_args='-vvv -o StrictHostKeyChecking=[[ or .ProcessingVars.absible_host_key_checking "no" ]] -o IdentityFile=[[ .ProcessingVars.ansible_ssh_private_key ]] -o ForwardAgent=yes [[ with .ProcessingVars.bastion_address ]] -o ProxyCommand="ssh  -W %h:%p -q ansible@[[ . ]]"[[ end]]'
+ansible_ssh_common_args='-vvv -F /tmp/sshconfig '
 

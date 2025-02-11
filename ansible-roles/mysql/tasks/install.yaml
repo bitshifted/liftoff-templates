@@ -25,19 +25,15 @@
   ansible.builtin.systemd:
     name: mysql
     state: restarted
+- name: Copy root password script
+  ansible.builtin.template:
+    src: root-pass-conf.sql.j2
+    dest: /tmp/root-pass-conf.sql
+    mode: '0755'
 - name: Change password for root user
-  community.mysql.mysql_user:
-    login_user: root
-    login_password: "{{ mysql_root_password }}"
-    login_port: "{{ mysql_port }}"
-    login_host: "{{ db_host }}"
-    check_implicit_admin: true
-    name: root
-    password: "{{ mysql_root_password }}"
-    salt: "{{ lookup('community.general.random_string', length=20) }}"
-    plugin: sha256_password
-    plugin_auth_string: "{{ mysql_root_password }}"
-    with_items:
-      - "localhost"
-      - "127.0.0.1"
-      - "::1"
+  become: true
+  ansible.builtin.command:
+    cmd: sudo mysql < /tmp/root-pass-conf.sql
+    creates: ~/root-pass-conf.sql.done
+  register: change_root_password
+  failed_when: change_root_password.rc != 0 and 'ERROR' in change_root_password.stderr

@@ -12,6 +12,16 @@
       [[- end ]]
     - role: ssh-config
     - role: mysql
+      [[- with .ProcessingVars.mysql_port ]]
+      mysql_port: [[ . ]] 
+      [[- end ]]
+      [[- with .ProcessingVars.localhost_only ]]
+      localhost_only: [[ . ]] 
+      [[- end ]]
+      operations:
+      [[- range .ProcessingVars.operations ]]
+        - [[ . ]]
+      [[- end ]]
     - role: ufw
       [[ with .ProcessingVars.ssh_allowed_ip ]]ssh_allowed_ip: "[[ . ]]" [[- end ]]
       ufw_rules:
