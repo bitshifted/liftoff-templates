@@ -25,15 +25,13 @@
   ansible.builtin.systemd:
     name: mysql
     state: restarted
-- name: Copy root password script
-  ansible.builtin.template:
-    src: root-pass-conf.sql.j2
-    dest: /tmp/root-pass-conf.sql
-    mode: '0755'
-- name: Change password for root user
+- name: Change default root password
   become: true
   ansible.builtin.command:
-    cmd: sudo mysql < /tmp/root-pass-conf.sql
-    creates: ~/root-pass-conf.sql.done
-  register: change_root_password
-  failed_when: change_root_password.rc != 0 and 'ERROR' in change_root_password.stderr
+    argv:
+      - mysqladmin
+      - -u
+      - root
+      - password
+      - "{{ mysql_root_password }}"
+    creates: /root/.mysql_root_password_set

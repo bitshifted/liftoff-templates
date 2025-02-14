@@ -5,5 +5,5 @@
 [[- end ]]
 
 [mysql:vars]
-ansible_ssh_common_args='-vvv -F /tmp/sshconfig '
+ansible_ssh_common_args='-vvv -F [[ .ProcessingVars.ssh_config_file ]] -o ServerAliveInterval=30 -o ControlMaster=auto -o ControlPersist=60s'
 
