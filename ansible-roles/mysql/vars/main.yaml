@@ -6,3 +6,5 @@ mysql_port: 3306
 mysql_root_password: mysql-user-password-123
 distro: noble
 localhost_only: false
+
+db_host: "127.0.0.1"

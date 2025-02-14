@@ -3,15 +3,19 @@
   hosts: all
   become: true
   roles:
-    - role: backend-nat
-      [[- with .ProcessingVars.gateway_ip ]]
-      gateway_ip: "[[ . ]]" 
-      [[- end ]]
-      [[- with .ProcessingVars.dns_servers ]]
-      dns_servers: [[ . ]] 
-      [[- end ]]
-    - role: ssh-config
+   
     - role: mysql
+      [[- with .ProcessingVars.mysql_port ]]
+      mysql_port: [[ . ]] 
+      [[- end ]]
+      [[- with .ProcessingVars.localhost_only ]]
+      localhost_only: [[ . ]] 
+      [[- end ]]
+      operations:
+      [[- range .ProcessingVars.operations ]]
+        - [[ . ]]
+      [[- end ]]
+[[- if not .ProcessingVars.localhost_only ]]
     - role: ufw
       [[ with .ProcessingVars.ssh_allowed_ip ]]ssh_allowed_ip: "[[ . ]]" [[- end ]]
       ufw_rules:
@@ -22,3 +26,4 @@
           from_ip: [[ .ip_range ]]
         [[- end ]]
       [[- end ]]
+[[  end ]]
